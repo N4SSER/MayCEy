@@ -1,4 +1,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ayuda(S0,S):-emergencia(S0,S).
+
+saludos(S0,S):- saludo(S0,S).
+
+salir(S0,S):- salida(S0,S).
+
+ayuda(S0,S):-emergencia(S0,S1), emergencia(S1,S).
+
 permiso(a,S0,S):-query(S0,S1),accion(a,S1,S).
 
 permiso(b,S0,S):-query(S0,S1),accion(b,S1,S).
@@ -14,6 +22,24 @@ accion(a,S0,S):-verbo(a,S0,S).
 accion(b,S0,S):-linker(S0,S1),verbo(b,S1,S).
 
 accion(b,S0,S):-verbo(b,S0,S).
+
+emergenciaid(S0,S):-sintagma_verbal(S0,S1),sintagma_nominal(S1,S).
+
+sintagma_verbal(S0,S):-verbo(th,S0,S1),determinante(S1,S).
+
+sintagma_verbal(S0,S):-verbo(th,S0,S).
+
+sintagma_nominal(S0,S):-determinante(S0,S1),tipoEmergencia(S0,S1).
+
+sintagma_nominal(S0,S):-tipoEmergencia(S0,S).
+
+donde(S0,S):-determinante(u,S0,S1),determinante(S1,S).
+
+donde(S0,S):-determinante(u,S0,S).
+
+lugarFallo(S0,S):-donde(S0,S1),nombre(objeto,S1,S).
+
+tipoEmergencia(S0,S):-nombre(f,S0,S1),lugarFallo(S1,S).
 
 identificacion(aeronave,S0,S):-sintagma_nominal(aeronave,S0,S1),sintagma_verbal(a,S1,S).
 
@@ -47,13 +73,31 @@ nombre(q,[permiso|S],S).
 
 nombre(q,[apoyo|S],S).
 
+nombre(f,[falla|S],S).
+
+nombre(f,[fuego|S],S).
+
+nombre(f,[fallo|S],S).
+
+nombre(f,[error|S],S).
+
+nombre(objeto,[motor|S],S).
+
+nombre(objeto,[sistema|S],S).
+
 solicitud([necesito|S],S).
 
 solicitud([quiero|S],S).
 
 determinante([mi|S],S).
 
+determinante([una|S],S).
+
+determinante([un|S],S).
+
 determinante([el|S],S).
+
+determinante(u,[en|S],S).
 
 determinante([la|S],S).
 
@@ -63,9 +107,23 @@ verbo(a,[volar|S],S).
 
 verbo(ser,[es|S],S).
 
+verbo(th,[tengo|S],S).
+
+verbo(th,[tiene|S],S).
+
+salida([gracias|S],S).
+
+salida([listo|S],S).
+
+salida([adios],S).
+
+verbo(th,[hay|S],S).
+
 verbo(b,[aterrizar|S],S).
 
 linker([para|S],S).
+
+emergencia(['MayDay'|S],S).
 
 nombre(aero,['aeronave'|S],S).
 
@@ -111,22 +169,25 @@ nombre(matricula,['BNF02'|S],S).
 
 nombre(matricula,['BNF03'|S],S).
 
-simbolos(['.'|S],S).
-
-simbolos([','|S],S).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 despegar(Y):-
-    permiso(a,Y,[]),write('\nPor favor identifiquese!!: '),read(XX), tokenize_atom(XX, YY),id(YY),write('Tienes permiso para despegar').
+    permiso(a,Y,[]),write('\nPor favor identifiquese!!: '),read(XX), tokenize_atom(XX, YY),id(YY),write('Tienes permiso para despegar\n').
 
 
 aterrizar(Y):-
-    (permiso(b,Y,[])),write('\nPor favor identifiquese!!: '),read(XX), tokenize_atom(XX, YY),id(YY),write('Tienes permiso para aterrizar').
+    (permiso(b,Y,[])),write('\nPor favor identifiquese!!: '),read(XX), tokenize_atom(XX, YY),id(YY),write('Tienes permiso para aterrizar\n').
 
 id(Y):-
-    ((identificacion(Y,[]),write('Contnuar...'));
-    (identificacion(aeronave,Y,[]),write('Ingrese su matricula: '),read(XX),tokenize_atom(XX,YY),nombre(matricula,YY,[]));
-    (identificacion(matricula,Y,[]),write('Ingrese su aeronave:'),read(XX),tokenize_atom(XX,YY),nombre(aeronaves,Y,[]))).
+    ((identificacion(Y,[]));
+    (identificacion(aeronave,Y,[]),write('Ingrese su matricula: '),read(XX),tokenize_atom(XX,YY),(nombre(matricula,YY,[]);identificacion(matricula,YY,[])));
+    (identificacion(matricula,Y,[]),write('Ingrese su aeronave:'),read(XX),tokenize_atom(XX,YY),(nombre(aeronaves,YY,[]);identificacion(aeronave,Y,[])))).
+
+peticion():-
+    write('Hola, en que te puedo ayudar? '),read(X), tokenize_atom(X, Y),(despegar(Y);aterrizar(Y)),main().
+
+emergencias():-
+     write('Cual es su emergencia? '),read(X), tokenize_atom(X, Y),emergenciaid(Y,[]),write('\nPor favor identifiquese!!: '),read(XX), tokenize_atom(XX, YY),id(YY),write('\nPista asignada'),main().
 
 main():-
-    write('Que desea hacer: '),read(X), tokenize_atom(X, Y),(despegar(Y);aterrizar(Y)).
+    read(X), tokenize_atom(X, Y),((saludos(Y,[]),peticion());(ayuda(Y,[]),emergencias());(salir(Y,[]),write('gracias por utilizar MayCEy'))).
