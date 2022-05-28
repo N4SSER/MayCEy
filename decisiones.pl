@@ -10,7 +10,7 @@ ocupada('P1').
 ocupada('P2-2').
 %ocupada('P3').
 
-indicar_pista_aterrizar(Direccion,Aeronave):-
+indicar_pista(Direccion,Aeronave):-
     %Nave pequena. P1 libre
     (pequenas(Aeronave),not(ocupada('P1')),write('Se te ha asignado la pista P1 por 5 minutos'));
 

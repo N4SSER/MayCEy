@@ -180,8 +180,8 @@ aterrizar(Y):-
 
 id(Y):-
     ((identificacion(Y,[]));
-    (identificacion(aeronave,Y,[]),write('Ingrese su matricula: '),read(XX),tokenize_atom(XX,YY),(nombre(matricula,YY,[]);identificacion(matricula,YY,[])));
-    (identificacion(matricula,Y,[]),write('Ingrese su aeronave:'),read(XX),tokenize_atom(XX,YY),(nombre(aeronaves,YY,[]);identificacion(aeronave,Y,[])))).
+    (identificacion(aeronave,Y,[]),write('Ingrese su matricula: '),read(XX),tokenize_atom(XX,YY),(nombre(matricula,YY,[]);identificacion(matricula,YY,[])),indicar_pista([],Y));
+    (identificacion(matricula,Y,[]),write('Ingrese su aeronave:'),read(XX),tokenize_atom(XX,YY),(nombre(aeronaves,YY,[]);identificacion(aeronave,Y,[])),indicar_pista([],YY))).
 
 peticion():-
     write('Hola, en que te puedo ayudar? '),read(X), tokenize_atom(X, Y),(despegar(Y);aterrizar(Y)),main().
